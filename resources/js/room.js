@@ -1,5 +1,3 @@
-const { createCanvas, loadImage } = require('canvas')
-
 module.exports = class Room {
     constructor(roomManager, code, admins) {
         this.roomManager = roomManager;
@@ -7,9 +5,6 @@ module.exports = class Room {
         this.admins = admins;
         this._users = [];
         this._locked = true;
-        this.canvas = createCanvas(10000, 10000);
-        this.ctx = this.canvas.getContext('2d')
-        this.ctx.fillStyle = '#000';
         
         this.adminCode = Array(20).fill('-').map(()=>{
             return this.roomManager.codeChars[Math.floor(Math.random()*this.roomManager.codeChars.length)];
@@ -66,13 +61,4 @@ module.exports = class Room {
     toggleLock() {
         this._locked = !this._locked;
     }
-
-    draw(part) {
-        this.ctx.beginPath();
-        this.ctx.moveTo(part[0].x, part[0].y);
-        this.ctx.lineTo(part[1].x, part[1].y);
-        this.ctx.closePath();
-        this.ctx.stroke();
-    }
-
 }

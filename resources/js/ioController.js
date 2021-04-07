@@ -82,18 +82,10 @@ module.exports = function(io, roomManager) {
             io.sockets.to(socket.room).emit('message', {type:'message', author: u.escape(message.author), content: u.escape(message.content)});
         });
 
-        socket.on("broadcaster", () => {
-            // broadcaster = socket.id;
-            // socket.broadcast.emit("broadcaster");
-
-        });
-        
 
         socket.on("draw", part=> {
             if(socket.admin || !roomManager.getRoom(socket.room).locked) {
                 io.sockets.in(socket.room).emit('draw', part);
-                // roomManager.getRoom(socket.room).draw(part);
-                // roomManager.getRoom(socket.room).save();
             }
         })
 
