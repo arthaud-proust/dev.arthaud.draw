@@ -32,6 +32,3 @@ window.onunload = window.onbeforeunload = () => {
     socket.emit('leave', {room, username: username});
     socket.close();
 };
-
-
-

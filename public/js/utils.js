@@ -3,33 +3,37 @@
 const menu = document.querySelector('#menu');
 const usersMenu = document.querySelector('#users');
 const chat = document.querySelector('#chat')
-const toggleAudioButton = document.querySelector("#toggle-audio");
+const clearButton = document.querySelector("#clear");
+const toggleLockButton = document.querySelector("#toggle-lock");
 const toggleMenuButton = document.querySelector("#toggle-menu");
 const toggleUsersButton = document.querySelector("#toggle-users");
 const toggleChatButton = document.querySelector("#toggle-chat");
+const endSessionButton = document.querySelector('#end-session');
+const leaveSessionButton = document.querySelector('#leave-session');
 
 
-if(toggleAudioButton) toggleAudioButton.addEventListener("click", toggleAudio);
+
+
+if(clearButton) clearButton.addEventListener("click", clear);
+if(toggleLockButton) toggleLockButton.addEventListener("click", toggleLock);
 if(toggleMenuButton) toggleMenuButton.addEventListener("click", toggleMenu);
 if(toggleUsersButton) toggleUsersButton.addEventListener("click", toggleUsers);
 if(toggleChatButton) toggleChatButton.addEventListener("click", toggleChat);
+if(endSessionButton) endSessionButton.addEventListener("click", endSession);
+if(leaveSessionButton) leaveSessionButton.addEventListener("click", leaveSession);
 
 
-function toggleAudio() {
-    if(videoElement.muted) {
-        videoElement.muted = false;
-        console.log("Enabling audio");
-        this.innerHTML = `<img src="/assets/sound.svg">`;
-    } else {
-        videoElement.muted = true;
-        console.log("Disabling audio");
-        this.innerHTML = `<img src="/assets/sound-off.svg">`;
-    }
+function clear() {
+    socket.emit('clear');
 }
 
 function toggleMenu() {
     this.src=`/assets/menu${menu.classList.contains('open')?'':'-close'}.svg`
     menu.classList.toggle('open')
+}
+
+function toggleLock() {
+    socket.emit('toggleLock');
 }
 
 function toggleUsers() {
@@ -41,4 +45,15 @@ function toggleUsers() {
 function toggleChat() {
     this.innerHTML = `<img src="/assets/chat${chat.classList.contains('open')?'-off':''}.svg">`;
     chat.classList.toggle('open')
+}
+
+function endSession() {
+    socket.emit('delete', {room});
+    socket.close();
+    document.location.href = '/'
+}
+function leaveSession() {
+    socket.emit('leave', {room, username: username});
+    socket.close();
+    document.location.href = '/'
 }

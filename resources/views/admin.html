@@ -5,7 +5,7 @@
         <title>Admin</title>
         <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0">
         <script>window.onload = function() {try{var link=document.createElement('link');link.rel='stylesheet';if(window.screen.width < 768) {link.href="/css/mobile.css";} else {link.href="/css/large.css";}document.getElementsByTagName('head')[0].appendChild(link);link.addEventListener('load', function () {document.querySelector('body').setAttribute('class', '');})}catch(e) {document.querySelector('body').setAttribute('class', '')}}</script>   
-   
+
         <script src="/js/socket.io.min.js"></script>
         <style>
             body.loading::before {
@@ -33,16 +33,6 @@
             <img id="toggle-menu" src="/assets/menu.svg">
             <div class="menu-items">
                 <span id="end-session">End room</span>
-                <section class="select">
-                    <label for="audioSource">Audio source: </label>
-                    <select id="audioSource"></select>
-                </section>
-        
-                <section class="select">
-                    <label for="videoSource">Video source: </label>
-                    <select id="videoSource"></select>
-                </section>
-
             </div>
         </div>
         <div id="users">
@@ -52,12 +42,16 @@
         <main id="container">
             <div class="container video">
                 <div class="inner">
-                    <video id="video-element" loop autoplay muted></video>
+                    <canvas id="canvas-element"></canvas>
+                    <div id="canvas-pointer"></div>
                     <div class="control">
-                        <button id="toggle-micro">
-                            <img src="/assets/sound.svg">
+                        <button id="toggle-lock" title="Everybody can draw">
+                            <img src="/assets/locked.svg">
                         </button>
-                        <button id="toggle-chat">
+                        <button id="clear" title="Clear drawings">
+                            <img src="/assets/clear.svg">
+                        </button>
+                        <button id="toggle-chat" title="Show messages">
                             <img src="/assets/chat-off.svg">
                         </button>
                     </div>
@@ -74,9 +68,11 @@
             </div>
         </main>
         <script src="/js/base.js"></script>
+        <script src="/js/stylo.js"></script>
+        <script src="/js/canvas.js"></script>
         <script src="/js/name.js"></script>
         <script src="/js/message.js"></script>
         <script src="/js/utils.js"></script>
-        <script src="/js/admin.js"></script>
+        <script src="/js/room.js"></script>
     </body>
 </html>

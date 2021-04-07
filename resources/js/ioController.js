@@ -5,6 +5,28 @@ module.exports = function(io, roomManager) {
     // let broadcaster
     io.sockets.on("connection", socket => {
         
+        socket.on('auth',  function(data) {
+            if(socket.admin = false) return;
+            if(data.adminCode == roomManager.getRoom(socket.room).adminCode) {
+                socket.admin = true;
+
+                io.sockets.in(socket.room).emit('message', {
+                    type:'announcement', 
+                    content:`
+                        <h1>Hi there!</h1>
+                        <h3>How can you invite people to join you?</h3>
+                        <p>By sharing this link: <code>${socket.handshake.headers.host}/room/${socket.room}</code></p>
+                        <p>Or by giving them the code of the room: <code>${socket.room}</code></p>
+                        <span style="color:#9c3d3d">Note for admin: don't share the link of your actual page, it's the admin page.</span>
+                        `
+                });
+            } else {
+                console.log(data);
+                console.log(roomManager.getRoom(socket.room).adminCode);
+                socket.admin = false;
+            }
+        })
+
         socket.on('join', function (data) {
 
             if(roomManager.getRoom(data.room).join(u.escape(data.username)) == 'exist') {
@@ -16,11 +38,11 @@ module.exports = function(io, roomManager) {
             console.log(`${data.username} joined the room ${data.room}`);
             socket.room = data.room
 
-            
 
             io.sockets.in(data.room).emit('users', roomManager.getRoom(data.room).users);
-            // socket.emit('message', {type:'annoucement', content:`${data.username} joined the room`});
-            io.sockets.in(data.room).emit('message', {type:'annoucement', content: u.escape(`${data.username} joined the room`)});
+            // socket.emit('message', {type:'announcement', content:`${data.username} joined the room`});
+            io.sockets.in(data.room).emit('message', {type:'announcement', content: u.escape(`${data.username} joined the room`)});
+            io.sockets.in(data.room).emit('roomUpdate', roomManager.getRoom(data.room).data);
         });
 
         socket.on('leave', function (data) {
@@ -32,8 +54,8 @@ module.exports = function(io, roomManager) {
 
 
             io.sockets.in(data.room).emit('users', roomManager.getRoom(data.room).users);
-            // socket.emit('message', {type:'annoucement', content:`${data.username} joined the room`});
-            io.sockets.in(data.room).emit('message', {type:'annoucement', content: u.escape(`${data.username} left the room`)});
+            // socket.emit('message', {type:'announcement', content:`${data.username} joined the room`});
+            io.sockets.in(data.room).emit('message', {type:'announcement', content: u.escape(`${data.username} left the room`)});
         });
 
         socket.on('userConnected', function (data) {
@@ -45,7 +67,8 @@ module.exports = function(io, roomManager) {
         });
 
         socket.on('delete', function (data) {
-            io.sockets.in(data.room).emit('message', {type:'annoucement', content:`Video ended`});
+            if(!socket.admin) return;
+            io.sockets.in(data.room).emit('message', {type:'announcement', content:`Video ended`});
             io.sockets.in(data.room).emit('ended');
             socket.leave(data.room);
             roomManager.delete(data.room);
@@ -62,38 +85,32 @@ module.exports = function(io, roomManager) {
         socket.on("broadcaster", () => {
             // broadcaster = socket.id;
             // socket.broadcast.emit("broadcaster");
-            io.sockets.in(socket.room).emit("broadcaster")
-            io.sockets.in(socket.room).emit('message', {
-                type:'annoucement', 
-                content:`
-                    <h1>Hi there!</h1>
-                    <h3>How can you invite people to join you?</h3>
-                    <p>By sharing this link: <code>${socket.handshake.headers.host}/room/${socket.room}</code></p>
-                    <p>Or by giving them the code of the room: <code>${socket.room}</code></p>
-                    <span style="color:#9c3d3d">Note for admin: don't share the link of your actual page, it's the admin page.</span>
-                    `
-                });
+
         });
         
-        socket.on("watcher", () => {
-            // socket.to(broadcaster).emit("watcher", socket.id);
-            io.sockets.in(socket.room).emit("watcher", socket.id);
-        });
 
-        socket.on("disconnect", () => {
-            // socket.to(broadcaster).emit("disconnectPeer", socket.id);
-            io.sockets.in(socket.room).emit("disconnectPeer", socket.id);
-        });
+        socket.on("draw", part=> {
+            if(socket.admin || !roomManager.getRoom(socket.room).locked) {
+                io.sockets.in(socket.room).emit('draw', part);
+                // roomManager.getRoom(socket.room).draw(part);
+                // roomManager.getRoom(socket.room).save();
+            }
+        })
 
-        socket.on("offer", (id, message) => {
-            socket.to(id).emit("offer", socket.id, message);
-        });
-        socket.on("answer", (id, message) => {
-            socket.to(id).emit("answer", socket.id, message);
-        });
-        socket.on("candidate", (id, message) => {
-            socket.to(id).emit("candidate", socket.id, message);
-        });
+        socket.on("move", coords=> {
+            if(socket.admin) io.sockets.in(socket.room).emit('move', coords);
+        })
+
+        socket.on("clear", coords=> {
+            if(socket.admin || !roomManager.getRoom(socket.room).locked) io.sockets.in(socket.room).emit('clear', coords);
+        })
+
+        socket.on("toggleLock", ()=> {
+            if(socket.admin) {
+                roomManager.getRoom(socket.room).toggleLock();
+                io.sockets.in(socket.room).emit('roomUpdate', {locked: roomManager.getRoom(socket.room).locked});
+            }
+        })
     });
 }
 

@@ -1,77 +1,48 @@
-let peerConnection;
-const config = {
-    iceServers: [
-        { 
-            "urls": "stun:stun.l.google.com:19302",
-        },
-        // { 
-        //   "urls": "turn:TURN_IP?transport=tcp",
-        //   "username": "TURN_USERNAME",
-        //   "credential": "TURN_CREDENTIALS"
-        // }
-    ]
-};
-const videoElement = document.querySelector("#video-element");
-const leaveSessionButton = document.querySelector('#leave-session');
+const cvs = document.getElementById('canvas-element');
+const pointer = document.getElementById('canvas-pointer');
 
-leaveSessionButton.addEventListener("click", function () {
-    socket.emit('leave', {room, username: username});
-    socket.close();
-    document.location.href = '/'
-});
+var canvas = new Canvas(cvs);
+var stylo = new Stylo(cvs, pointer);
+var roomObj = {};
 
 
+socket.emit('create', room);
 
-socket.on("offer", (id, description) => {
-    peerConnection = new RTCPeerConnection(config);
-    peerConnection
-        .setRemoteDescription(description)
-        .then(() => peerConnection.createAnswer())
-        .then(sdp => peerConnection.setLocalDescription(sdp))
-        .then(() => {
-            socket.emit("answer", id, peerConnection.localDescription);
-        });
+socket.on('roomUpdate', function(room) {
+    Object.entries(room).forEach(([key,value])=>{
+        roomObj[key] = value;
+    })
 
-    peerConnection.ontrack = event => {
-        videoElement.srcObject = event.streams[0];
-    };
-    peerConnection.onicecandidate = event => {
-        if (event.candidate) {
-            socket.emit("candidate", id, event.candidate);
-        }
-    };
-});
+    toggleLockButton.innerHTML=`<img src="/assets/${roomObj.locked?'':'un'}locked.svg">`
+})
+
+socket.on('move', function(coords) {
+    stylo.movePointer(coords);
+})
+
+socket.on('move', function(coords) {
+    stylo.movePointer(coords);
+})
+
+socket.on('draw', function(part) {
+    stylo.draw(part);
+})
+
+socket.on('clear', e=>canvas.clear(e));
 
 
-socket.on("candidate", (id, candidate) => {
-    peerConnection
-        .addIceCandidate(new RTCIceCandidate(candidate))
-        .catch(e => console.error(e));
-});
+
+
 
 socket.on("connect", () => {
     socket.emit('room', room);
-    socket.emit("watcher");
-});
-
-socket.on("broadcaster", () => {
-    socket.emit("watcher");
-});
-
-socket.on("disconnectPeer", () => {
-    peerConnection.close();
 });
 
 socket.on("ended", () => {
-    console.log('Video ended');
-    videoElement.srcObject = null;
-    videoElement.src = '/videos/no-signal-2.mp4';
-    videoElement.play();
+    window.location.href = '/';
 });
 
 window.onunload = window.onbeforeunload = () => {
     socket.emit('leave', {room, username: username});
     socket.close();
 };
-videoElement.src= '/videos/no-signal-1.mp4';
-

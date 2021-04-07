@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs')
 // const utils = require('./utils');
 
 module.exports = function(router, roomManager) {
@@ -77,7 +78,6 @@ module.exports = function(router, roomManager) {
     router.get('/room/:code/object', function(req, res) {
         res.send(roomManager.getRoom(req.params.code).json);
     });
-
 
     router.get('/:error', function(req, res) {
         res.sendFile(path.join(__dirname, `/../views/${req.params.error}.html`));
