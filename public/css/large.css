@@ -254,7 +254,8 @@ main {
     width: 100vw;
     text-align: center;
 }
-.container.index form { 
+.container.index form,
+.container.index .form { 
     font-size: 1.6rem;
     margin:  30px 70px;
     display: flex;
@@ -262,10 +263,12 @@ main {
     justify-content: center;
     align-items: flex-start;
 }
-.container.index form label {
+.container.index form label,
+.container.index .form label {
     margin-bottom: 10px;
 }
-.container.index form input {
+.container.index form input,
+.container.index .form input {
     font-size: 1.6rem;
     margin: 5px 0;
     padding: 10px 15px;
@@ -276,7 +279,10 @@ main {
     -ms-border-radius: 10px;
     -o-border-radius: 10px;
 }
-.container.index form input[type="submit"], .container.index form input[type="button"] {
+.container.index .form input[type="submit"],
+.container.index .form input[type="button"],
+.container.index form input[type="submit"],
+.container.index form input[type="button"] {
     cursor: pointer;
     background: #f89345;
     color: white;
