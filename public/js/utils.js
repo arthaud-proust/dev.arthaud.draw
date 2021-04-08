@@ -13,7 +13,6 @@ const leaveSessionButton = document.querySelector('#leave-session');
 
 
 
-
 if(clearButton) clearButton.addEventListener("click", clear);
 if(toggleLockButton) toggleLockButton.addEventListener("click", toggleLock);
 if(toggleMenuButton) toggleMenuButton.addEventListener("click", toggleMenu);

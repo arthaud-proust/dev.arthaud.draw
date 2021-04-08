@@ -5,11 +5,15 @@ module.exports = class Room {
         this.admins = admins;
         this._users = [];
         this._locked = true;
-        
-        this.adminCode = Array(20).fill('-').map(()=>{
-            return this.roomManager.codeChars[Math.floor(Math.random()*this.roomManager.codeChars.length)];
-        }).join('');
-        // this.adminCode = 'adminTESTE';
+        this._pointers = [];
+
+        if(process.env.LOCAL) {
+            this.adminCode = 'adminTESTE';
+        } else {
+            this.adminCode = Array(20).fill('-').map(()=>{
+                return this.roomManager.codeChars[Math.floor(Math.random()*this.roomManager.codeChars.length)];
+            }).join('');
+        }
     }
 
     get data() {
@@ -33,6 +37,10 @@ module.exports = class Room {
         return this._users
     }
 
+    get pointers() {
+        return this._pointers
+    }
+
     validAdminCode(adminCode) {
         return adminCode === this.adminCode;
     }
@@ -42,9 +50,10 @@ module.exports = class Room {
     }
 
     join(username) {
+        if(process.env.LOCAL) return 'done';
+
         if(this.connected(username)) {
             return 'exist'
-            // return 'done'
         } else {
             this._users.push(username)
             return 'done'

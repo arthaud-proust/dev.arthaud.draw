@@ -10,7 +10,6 @@ const server = http.createServer(app);
 
 const io = require("socket.io")(server);
 const roomManager = new (require('./resources/js/roomManager'))();
-roomManager.create('TESTE');
 
 // support request
 app.use(bodyParser.json());                         // to support JSON-encoded bodies
@@ -32,5 +31,9 @@ require('./resources/js/ioController')(io, roomManager);
 
 io.sockets.on("error", e => console.log(e));
 const PORT = process.env.PORT || 8000;
-// server.listen(PORT, '192.168.0.21', () => console.log(`Server is running on port ${PORT}`));
-server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+if(process.env.LOCAL) {
+    roomManager.create('TESTE');
+    server.listen(PORT, '192.168.0.21', () => console.log(`Server is running on port ${PORT} LOCAL`));
+} else {
+    server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+}

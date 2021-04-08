@@ -339,13 +339,27 @@ main {
     /* max-height: 90vh; */
     background-color: white;
 }
-/* #canvas-pointer {
+
+#canvas-pointers {
+    top: 0;
+    left:0;
+    position: absolute;
+}
+.canvas-pointer {
     position: absolute;
     height: 10px;
-    width: 10px;
+    width: 2px;
     z-index: 2000;
-    background: red;
-} */
+    color: #121215;
+    font-size: 0.7rem;
+    padding-left: 5px;
+}
+.canvas-pointer::before {
+    position: absolute;
+    top: -12px;
+    left: -2px;
+    content: url(/assets/pencil.svg);
+}
 
 
 .container.messages {

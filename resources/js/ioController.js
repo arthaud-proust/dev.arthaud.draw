@@ -37,6 +37,7 @@ module.exports = function(io, roomManager) {
             socket.join(data.room);
             console.log(`${data.username} joined the room ${data.room}`);
             socket.room = data.room
+            socket.username = data.username;
 
 
             io.sockets.in(data.room).emit('users', roomManager.getRoom(data.room).users);
@@ -85,7 +86,7 @@ module.exports = function(io, roomManager) {
 
         socket.on("draw", part=> {
             if(socket.admin || !roomManager.getRoom(socket.room).locked) {
-                io.sockets.in(socket.room).emit('draw', part);
+                io.sockets.in(socket.room).emit('draw', {part, username: socket.username});
             }
         })
 
