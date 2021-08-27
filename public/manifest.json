@@ -1,6 +1,7 @@
 {
     "short_name": "Draw Things",
     "name": "Draw Things",
+    "description": "Draw what you want, with the ones you want.",
     "icons": [
         {
             "src": "/assets/img/favicon.ico",
